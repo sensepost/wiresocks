@@ -2,7 +2,7 @@
 
 FROM ubuntu:focal
 
-LABEL Author="Michael Kruger <https://github.com/cablethief>"
+LABEL Maintainer="Michael Kruger <https://github.com/cablethief>"
 
 ENV DEBIAN_FRONTEND noninteractive
 
