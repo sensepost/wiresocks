@@ -89,3 +89,7 @@ Uses Darkks [redsocks](https://github.com/darkk/redsocks/) which is amazing!
 Uses a modified version of [ncarliers](https://github.com/ncarlier/dockerfiles/tree/master/redsocks) redsocks docker to provide a whitelist and use a socks proxy.
 
 Uses [LinuxServers wireguard](https://github.com/linuxserver/docker-wireguard) image to setup the wireguard vpn to connect into the socks network
+
+## license
+
+`WireSocks` is licensed under a [GNU General Public v3 License](https://www.gnu.org/licenses/gpl-3.0.en.html). Permissions beyond the scope of this license may be available at <http://sensepost.com/contact/>.
