@@ -1,6 +1,8 @@
 # WireSocks
 
-![Docker Image](https://github.com/cablethief/bloodysocks/actions/workflows/docker-image.yml/badge.svg)
+<a href="https://twitter.com/_cablethief"><img src="https://img.shields.io/badge/twitter-%40_cablethief-blue.svg" alt="@_cablethief" height="18">
+
+![Docker Image](https://github.com/sensepost/wiresocks/actions/workflows/docker-image.yml/badge.svg)
 
 Docker-compose and Dockerfile to setup a wireguard VPN connection to force TCP traffic through a socks proxy. 
 
@@ -46,19 +48,19 @@ Runs a docker image with `--privileged=true --net=host` to capture all docker ne
 Start the container:
 
 ```
-docker run --privileged=true --net=host --rm -it ghcr.io/cablethief/wiresocks 1.2.3.4 3128
+docker run --privileged=true --net=host --rm -it ghcr.io/sensepost/wiresocks 1.2.3.4 3128
 ```
 
 You can specify which ranges you want to have rediected to the socks proxy by providing a `WHITELIST` environment variable:
 
 ```
-docker run --privileged=true --net=host -e WHITELIST=10.0.0.0/8 --rm -it ghcr.io/cablethief/wiresocks 1.2.3.4 3128
+docker run --privileged=true --net=host -e WHITELIST=10.0.0.0/8 --rm -it ghcr.io/sensepost/wiresocks 1.2.3.4 3128
 ```
 
 The `WHITELIST` may be comma seperated for multiple ranges:
 
 ```
-docker run --privileged=true --net=host -e WHITELIST="10.0.0.0/8,192.168.0.0/24" --rm -it ghcr.io/cablethief/wiresocks 1.2.3.4 3128
+docker run --privileged=true --net=host -e WHITELIST="10.0.0.0/8,192.168.0.0/24" --rm -it ghcr.io/sensepost/wiresocks 1.2.3.4 3128
 ```
 
 Replace the IP and the port by those of your proxy.

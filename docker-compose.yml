@@ -3,7 +3,7 @@ version: '3.9'
 services:
 
   wiresocks:
-    image: ghcr.io/cablethief/wiresocks:0.1.0
+    image: ghcr.io/sensepost/wiresocks:0.1.0
     container_name: wiresocks
     command: 1.2.3.4 3128 # Set your socks proxy address
     network_mode: "host"
