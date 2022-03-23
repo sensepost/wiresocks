@@ -75,14 +75,16 @@ Use docker/docker-compose stop to halt the container/s. The iptables rules shoul
 iptables-save | grep -v REDSOCKS | iptables-restore
 ```
 
-# TODO
+# Other
+
+## TODO
 
 Future ideas:
 
  - Add capture for DNS
  - Try work out how to capture all UDP traffic into SOCKS
 
-# Thanks
+## Thanks
 
 Uses Darkks [redsocks](https://github.com/darkk/redsocks/) which is amazing! 
 
