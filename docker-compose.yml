@@ -1,0 +1,50 @@
+---
+version: '3.9'
+services:
+
+  wiresocks:
+    image: ghcr.io/cablethief/wiresocks:0.1.0
+    container_name: wiresocks
+    command: 1.2.3.4 3128 # Set your socks proxy address
+    network_mode: "host"
+    environment:
+      - WHITELIST=10.0.0.0/8
+      - DOCKER_NET=wiresocks0
+    cap_add:
+      - NET_ADMIN
+    restart: unless-stopped
+
+  wireguard:
+    image: lscr.io/linuxserver/wireguard
+    container_name: wireguard
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/London
+      - SERVERPORT=51820
+      # These are just settings that get populated into the client configs, you can edit the config after creation
+      - SERVERURL=wireguard.domain.com #optional - your server address
+      - PEERS=1 #optional - Amount of client configs to generate
+      - PEERDNS=auto #optional - DNS to be used by clients, not yet setup to go through redsocks
+      - INTERNAL_SUBNET=10.13.13.0 #optional - What IPs to use for wireguard VPN
+      - ALLOWEDIPS=0.0.0.0/0 #optional - Set in clients to say what should be sent to wireguard
+    volumes:
+      - /tmp/config:/config # Set where you want your configs written
+      - /lib/modules:/lib/modules
+    ports:
+      - 51820:51820/udp
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
+    networks:
+      - wiresocks
+    restart: unless-stopped
+
+networks:
+  wiresocks:
+    name: wiresocks
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: wiresocks0
