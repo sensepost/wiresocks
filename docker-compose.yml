@@ -8,7 +8,7 @@ services:
     command: 1.2.3.4 3128 # Set your socks proxy address
     network_mode: "host"
     environment:
-      - WHITELIST=10.0.0.0/8
+      - WHITELIST=10.0.0.0/8 # what traffic would we like to send to SOCKS
       - DOCKER_NET=wiresocks0
     cap_add:
       - NET_ADMIN
@@ -28,12 +28,12 @@ services:
       # These are just settings that get populated into the client configs, you can edit the config after creation
       - SERVERURL=wireguard.domain.com #optional - your server address
       - PEERS=1 #optional - Amount of client configs to generate
-      - PEERDNS=auto #optional - DNS to be used by clients, not yet setup to go through redsocks
       - INTERNAL_SUBNET=10.13.13.0 #optional - What IPs to use for wireguard VPN
       - ALLOWEDIPS=0.0.0.0/0 #optional - Set in clients to say what should be sent to wireguard
     volumes:
       - /tmp/config:/config # Set where you want your configs written
       - /lib/modules:/lib/modules
+      - ./coredns:/config/coredns
     ports:
       - 51820:51820/udp
     sysctls:

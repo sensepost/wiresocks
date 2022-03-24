@@ -1,0 +1,15 @@
+
+# Domain that you would like to convert to TCP so that
+# it gets pushed through redsocks
+example.zzz {
+    loop
+    log
+    # Change IP to that of the internal DNS server you want to use.
+    forward . 123.123.123.123:53 {
+        force_tcp
+    }
+}
+. {
+    loop
+    forward . /etc/resolv.conf
+}

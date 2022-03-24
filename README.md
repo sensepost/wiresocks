@@ -34,10 +34,13 @@ docker-compose logs wiresocks
 
 Docker-compose will also setup wireguard, depending on where you set your wireguard config directory you should be able to find the peer config you want to use. Grab that and edit it so that it is reasonable. AllowedIPs can be used to further target the internal network. 
 
-*Keep in mind DNS is not yet working*
-
 You can then take that wireguard config and place it into Windows or MacOS, or whatever OS you require and connect to the VPN. Now all traffic should be forced through the SOCKS proxy without hastle.
 
+## DNS
+
+For DNS I have provided a example Corefile for CoreDNS which will take DNS requests for a specific domain and forward them on but with TCP. This effectivly gets us DNS through the SOCKS tunnel. So for DNS to work you will need to edit the domain and DNS server to use.
+
+This file gets mounted in the Wireguard docker to be used by the VPN so that if your client is using the DNS provided by the docker it should be able to resolve DNS through the SOCKS proxy using the domain and server you provided.
 
 ## Information about the redsocks docker
 
@@ -76,13 +79,6 @@ iptables-save | grep -v REDSOCKS | iptables-restore
 ```
 
 # Other
-
-## TODO
-
-Future ideas:
-
- - Add capture for DNS
- - Try work out how to capture all UDP traffic into SOCKS
 
 ## Thanks
 
