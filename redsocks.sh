@@ -10,9 +10,12 @@ else
     proxy_port=3128
 fi
 
+docker_network_ip=$(ip addr show dev $DOCKER_NET | egrep -o 'inet [0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | cut -d' ' -f2)
+
 echo "Creating redsocks configuration file using proxy ${proxy_ip}:${proxy_port}..."
 sed -e "s|\${proxy_ip}|${proxy_ip}|" \
     -e "s|\${proxy_port}|${proxy_port}|" \
+    -e "s|\${docker_network_ip}|${docker_network_ip}|" \
     /etc/redsocks.tmpl > /tmp/redsocks.conf
 
 echo "Generated configuration:"
@@ -44,7 +47,7 @@ trap 'kill ${!}; usr_handler' SIGUSR1
 trap 'kill ${!}; term_handler' SIGTERM
 
 echo "Starting redsocks..."
-/usr/sbin/redsocks -c /tmp/redsocks.conf &
+/usr/bin/redsocks -c /tmp/redsocks.conf &
 pid="$!"
 
 # wait indefinetely

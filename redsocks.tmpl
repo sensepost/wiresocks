@@ -9,11 +9,13 @@ base {
 }
 
 redsocks {
-  local_ip = 127.0.0.1;
-  local_port = 12345;
-  
-  ip = ${proxy_ip};
-  port =  ${proxy_port};
+
+  bind = "${docker_network_ip}:12345";
+
+//  local_ip = 127.0.0.1;
+//  local_port = 12345;
+
+  relay = "${proxy_ip}:${proxy_port}";
 
   type = socks5;
 }

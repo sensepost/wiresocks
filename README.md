@@ -82,9 +82,9 @@ iptables-save | grep -v REDSOCKS | iptables-restore
 
 ## Thanks
 
-Uses Darkks [redsocks](https://github.com/darkk/redsocks/) which is amazing! 
+Uses semigodkings [redsocks](https://github.com/semigodking/redsocks) which is a fork of the original Darkk [redsocks](https://github.com/darkk/redsocks/) both of which are amazing! 
 
-Uses a modified version of [ncarliers](https://github.com/ncarlier/dockerfiles/tree/master/redsocks) redsocks docker to provide a whitelist and use a socks proxy.
+Uses a modified version of [ncarliers](https://github.com/ncarlier/dockerfiles/tree/master/redsocks) redsocks scripts to provide a whitelist and use a socks proxy.
 
 Uses [LinuxServers wireguard](https://github.com/linuxserver/docker-wireguard) image to setup the wireguard vpn to connect into the socks network
 
