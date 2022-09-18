@@ -1,22 +1,9 @@
-# wiresocks docker image.
-
-FROM ubuntu:focal
+FROM ghcr.io/xjasonlyu/tun2socks:latest
 
 LABEL Maintainer="Michael Kruger <https://github.com/cablethief>"
+# I wanted a different entrypoint
 
-ENV DEBIAN_FRONTEND noninteractive
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
-ENV DOCKER_NET docker0
-ENV WHITELIST 0.0.0.0/0
-
-# Install packages
-RUN apt-get update && apt-get install -y redsocks iptables
-
-# Copy configuration files...
-COPY redsocks.tmpl /etc/redsocks.tmpl
-COPY redsocks.sh /usr/local/bin/redsocks.sh
-COPY redsocks-fw.sh /usr/local/bin/redsocks-fw.sh
-
-RUN chmod +x /usr/local/bin/*
-
-ENTRYPOINT ["/usr/local/bin/redsocks.sh"]
+ENTRYPOINT ["/entrypoint.sh"]

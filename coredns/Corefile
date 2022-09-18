@@ -1,6 +1,6 @@
 
 # Domain that you would like to convert to TCP so that
-# it gets pushed through redsocks
+# it gets pushed through tun2socks
 example.zzz {
     loop
     log

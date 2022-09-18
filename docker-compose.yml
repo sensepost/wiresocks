@@ -3,15 +3,34 @@ version: '3.9'
 services:
 
   wiresocks:
-    image: ghcr.io/sensepost/wiresocks:0.1.0
+    image: ghcr.io/sensepost/wiresocks:latest
     container_name: wiresocks
-    command: 1.2.3.4 3128 # Set your socks proxy address
-    network_mode: "host"
-    environment:
-      - WHITELIST=10.0.0.0/8 # what traffic would we like to send to SOCKS
-      - DOCKER_NET=wiresocks0
+    mem_limit: 1000000000
+    memswap_limit: 2000000000
+    mem_reservation: 512m
     cap_add:
       - NET_ADMIN
+    devices:
+        - '/dev/net/tun:/dev/net/tun'
+    environment:
+      - LOGLEVEL=info             # default
+      - TUN=tun0                  # default
+      - ADDR=198.18.0.1/15        # default
+      - MTU=9000                  # default
+      - PROXY=                    # *required
+      - STATS=:8080               # optional
+      - RESTAPI=                  # optional
+      - TCP_SNDBUF=.              # optional
+      - TCP_RCVBUF=.              # optional
+      - TCP_AUTO_TUNING=.         # optional
+      - UDP_TIMEOUT=              # optional
+      - EXTRA_COMMANDS=           # optional
+      - TUN_INCLUDED_ROUTES=      # optional
+    networks:
+      wiresocks
+    sysctls:
+      - net.ipv4.ip_forward=1
+      # - net.ipv4.conf.all.rp_filter=0
     restart: unless-stopped
 
   wireguard:
@@ -39,7 +58,7 @@ services:
     sysctls:
       - net.ipv4.conf.all.src_valid_mark=1
     networks:
-      - wiresocks
+      - container:wiresocks
     restart: unless-stopped
 
 networks:
