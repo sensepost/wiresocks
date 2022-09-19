@@ -17,7 +17,12 @@ services:
       - TUN=tun0                  # default
       - ADDR=198.18.0.1/15        # default
       - MTU=9000                  # default
+
+      # What we care about:
       - PROXY=                    # *required
+      - TUN_INCLUDED_ROUTES=      # The routes you want to route through the socks
+
+      # Other options avaliable with tun2socks
       - STATS=:8080               # optional
       - RESTAPI=                  # optional
       - TCP_SNDBUF=.              # optional
@@ -25,12 +30,18 @@ services:
       - TCP_AUTO_TUNING=.         # optional
       - UDP_TIMEOUT=              # optional
       - EXTRA_COMMANDS=           # optional
-      - TUN_INCLUDED_ROUTES=      # optional
     networks:
       wiresocks
+    extra_hosts:
+    # So you can easily reference your host docker interface for the docker network
+      - "host.docker.internal:host-gateway" 
     sysctls:
       - net.ipv4.ip_forward=1
+      - net.ipv4.conf.all.src_valid_mark=1
       # - net.ipv4.conf.all.rp_filter=0
+    ports:
+    # Because we are going to use this containers network for wireguard we have to port forward here
+      - 51820:51820/udp
     restart: unless-stopped
 
   wireguard:
@@ -48,17 +59,16 @@ services:
       - SERVERURL=wireguard.domain.com #optional - your server address
       - PEERS=1 #optional - Amount of client configs to generate
       - INTERNAL_SUBNET=10.13.13.0 #optional - What IPs to use for wireguard VPN
+
+      # Will likely match with TUN_INCLUDED_ROUTES above
       - ALLOWEDIPS=0.0.0.0/0 #optional - Set in clients to say what should be sent to wireguard
     volumes:
       - /tmp/config:/config # Set where you want your configs written
       - /lib/modules:/lib/modules
       - ./coredns:/config/coredns
-    ports:
-      - 51820:51820/udp
     sysctls:
       - net.ipv4.conf.all.src_valid_mark=1
-    networks:
-      - container:wiresocks
+    network_mode: container:wiresocks
     restart: unless-stopped
 
 networks:
