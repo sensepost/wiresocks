@@ -46,7 +46,7 @@ services:
 
   wireguard:
     image: lscr.io/linuxserver/wireguard
-    container_name: wireguard
+    container_name: wiresocks-wg
     cap_add:
       - NET_ADMIN
       - SYS_MODULE
