@@ -10,7 +10,7 @@ The intention is to facilitate tooling on Windows and MacOS that ignore things l
 
 ## Warning
 
-Currently this will only capture TCP traffic and not do DNS for you. So the coredns file with wireguard to configure a tcp dns forwarder. Please see the [DNS](##DNS) section below.
+Currently this will only capture TCP traffic and not do DNS for you. So use the coredns file with wireguard to configure a tcp dns forwarder. Please see the [DNS](##DNS) section below.
 
 Docker-compose provided by ubuntu is old and doesnt support versions that allow networking fancyness. So please use a recent version of docker-compose if it complains about Versions.
 
