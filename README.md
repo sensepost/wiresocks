@@ -6,7 +6,7 @@ Docker-compose and Dockerfile to setup a wireguard VPN connection to force TCP t
 
 I set this up after fighting with socks proxies and Windows offensive tooling.
 
-The intention is to facilitate tooling on Windows and MacOS that ignore things like [proxychains](https://github.com/rofl0r/proxychains-ng), [proxifier](https://www.proxifier.com/), and [proxycap](https://www.proxycap.com/). This is done by using wireguard to VPN to a Linux which has routing and iptable rules to force TCP traffic via [tun2socks](https://github.com/xjasonlyu/tun2socks) into a Socks5 proxy.  
+The intention is to facilitate tooling on Windows and MacOS that ignore things like [proxychains](https://github.com/rofl0r/proxychains-ng), [proxifier](https://www.proxifier.com/), and [proxycap](https://www.proxycap.com/). This is done by using wireguard to VPN to a Linux which has routing setup to force traffic via [tun2socks](https://github.com/xjasonlyu/tun2socks) into a Socks5 proxy.  
 
 ## Warning
 
