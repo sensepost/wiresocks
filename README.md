@@ -6,11 +6,11 @@ Docker-compose and Dockerfile to setup a wireguard VPN connection to force TCP t
 
 I set this up after fighting with socks proxies and Windows offensive tooling.
 
-The intention is to facilitate tooling on Windows and MacOS that ignore things like [proxychains](https://github.com/rofl0r/proxychains-ng), [proxifier](https://www.proxifier.com/), and [proxycap](https://www.proxycap.com/). This is done by using wireguard to VPN to a Linux which has routing and iptable rules to force TCP traffic via [RedSocks](https://github.com/darkk/redsocks) into a Socks5 proxy.  
+The intention is to facilitate tooling on Windows and MacOS that ignore things like [proxychains](https://github.com/rofl0r/proxychains-ng), [proxifier](https://www.proxifier.com/), and [proxycap](https://www.proxycap.com/). This is done by using wireguard to VPN to a Linux which has routing and iptable rules to force TCP traffic via [tun2socks](https://github.com/xjasonlyu/tun2socks) into a Socks5 proxy.  
 
 ## Warning
 
-Currently this will only capture TCP traffic and not do DNS for you. So use `dig +tcp` to resolve hostnames and add it to your hosts file on your OS.
+Currently this will only capture TCP traffic and not do DNS for you. So the coredns file with wireguard to configure a tcp dns forwarder. Please see the [DNS](##DNS) section below.
 
 Docker-compose provided by ubuntu is old and doesnt support versions that allow networking fancyness. So please use a recent version of docker-compose if it complains about Versions.
 
@@ -18,7 +18,7 @@ Docker-compose provided by ubuntu is old and doesnt support versions that allow 
 
 ## Docker Compose
 
-A docker-compose has been provided to setup both the redsocks and wireguard. 
+A docker-compose has been provided to setup both the tun2socks and wireguard. 
 
 Edit the variables as desired withing the `docker-compose.yml` and to start the stack in the background use:
 
@@ -26,7 +26,7 @@ Edit the variables as desired withing the `docker-compose.yml` and to start the 
 docker-compose up -d
 ```
 
-You can view the logs from redsocks to check what is being proxied and errors with:
+You can view the logs from tun2socks to check what is being proxied and errors with:
 
 ```
 docker-compose logs wiresocks
@@ -42,49 +42,33 @@ For DNS I have provided a example Corefile for CoreDNS which will take DNS reque
 
 This file gets mounted in the Wireguard docker to be used by the VPN so that if your client is using the DNS provided by the docker it should be able to resolve DNS through the SOCKS proxy using the domain and server you provided.
 
-## Information about the redsocks docker
+## Information about the tun2socks docker
 
-Runs a docker image with `--privileged=true --net=host` to capture all docker network traffic (docker0 by default) and redirect it into redsocks. 
+Runs a docker image with `--cap-add=NET_ADMIN --sysctl="net.ipv4.ip_forward=1" --device=/dev/net/tun:/dev/net/tun` to allow the container to create a tun interface as well as set routes for it. 
 
-Start the container:
-
-```
-docker run --privileged=true --net=host --rm -it ghcr.io/sensepost/wiresocks 1.2.3.4 3128
-```
-
-You can specify which ranges you want to have rediected to the socks proxy by providing a `WHITELIST` environment variable:
+You specify the socks proxy using the `PROXY` environment variable, make sure your docker can reach that proxy. 
 
 ```
-docker run --privileged=true --net=host -e WHITELIST=10.0.0.0/8 --rm -it ghcr.io/sensepost/wiresocks 1.2.3.4 3128
+-e PROXY=socks5://socksaddress:1080
 ```
 
-The `WHITELIST` may be comma seperated for multiple ranges:
+You can specify which ranges you want to have rediected to the socks proxy by providing a `TUN_INCLUDED_ROUTES` environment variable:
 
 ```
-docker run --privileged=true --net=host -e WHITELIST="10.0.0.0/8,192.168.0.0/24" --rm -it ghcr.io/sensepost/wiresocks 1.2.3.4 3128
+-e TUN_INCLUDED_ROUTES=192.168.165.0/24
 ```
 
-Replace the IP and the port by those of your proxy.
+The `TUN_INCLUDED_ROUTES` may be comma seperated for multiple ranges.
 
-The container will start redsocks and automatically configure iptable to forward **all** the TCP traffic (Unless `WHITELIST` is used) of the `$DOCKER_NET` interface (`docker0` by default) through the proxy.
-
-You can specify the interface to capture traffic on by using the `DOCKER_NET` variable `-e DOCKER_NET=docker0`.
-
-## Cleanup
-
-Use docker/docker-compose stop to halt the container/s. The iptables rules should be reversed. If not, you can execute the command:
-
-```
-iptables-save | grep -v REDSOCKS | iptables-restore
-```
+The container will start tun2socks and configure routes to forward traffic of the routes provided in `TUN_INCLUDED_ROUTES` through the created TUN interface.
 
 # Other
 
 ## Thanks
 
-Uses Darkks [redsocks](https://github.com/darkk/redsocks/) which is amazing! 
+Original idea used Darkks [redsocks](https://github.com/darkk/redsocks/) which is amazing! 
 
-Uses a modified version of [ncarliers](https://github.com/ncarlier/dockerfiles/tree/master/redsocks) redsocks docker to provide a whitelist and use a socks proxy.
+This version uses the equally amazing [tun2socks](https://github.com/xjasonlyu/tun2socks) by xjasonlyu! 
 
 Uses [LinuxServers wireguard](https://github.com/linuxserver/docker-wireguard) image to setup the wireguard vpn to connect into the socks network
 
