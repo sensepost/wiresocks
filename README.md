@@ -62,6 +62,11 @@ The `TUN_INCLUDED_ROUTES` may be comma seperated for multiple ranges.
 
 The container will start tun2socks and configure routes to forward traffic of the routes provided in `TUN_INCLUDED_ROUTES` through the created TUN interface.
 
+## Socksing other dockers
+
+You can use the `--net container:wiresocks` option with other dockers to get them to share the same network namespace as the wiresocks docker. This includes the setup routes as well as access to the TUN interface.
+This essentially means you can tunnel arbitary dockers using tun2socks with this option. In the docker-compose we use it for WireGuard so that Windows/MacOS just need a WireGuard config and they can have their traffic transparently proxied. 
+
 # Other
 
 ## Thanks
