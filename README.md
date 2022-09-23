@@ -1,6 +1,6 @@
 # WireSocks
 
-<a href="https://twitter.com/_cablethief"><img src="https://img.shields.io/badge/twitter-%40_cablethief-blue.svg" alt="@_cablethief" height="18"></a>  <a href="https://github.com/sensepost/wiresocks/actions/workflows/docker-image.yml"><img src="https://github.com/sensepost/wiresocks/actions/workflows/docker-image.yml/badge.svg" alt="docker builds" height="18"></a>
+<a href="https://twitter.com/_cablethief"><img src="https://img.shields.io/badge/twitter-%40_cablethief-blue.svg" alt="@_cablethief" height="18"></a>  <a href="https://github.com/sensepost/wiresocks/actions/workflows/docker-image.yml"><img src="https://github.com/sensepost/wiresocks/actions/workflows/docker-image.yml/badge.svg" alt="docker builds" height="18"></a> 
 
 Docker-compose and Dockerfile to setup a wireguard VPN connection to force TCP traffic through a socks proxy. 
 
