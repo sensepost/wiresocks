@@ -5,67 +5,71 @@ services:
   wiresocks:
     image: ghcr.io/sensepost/wiresocks:latest
     container_name: wiresocks
-    mem_limit: 1000000000
-    memswap_limit: 2000000000
+    mem_limit: 1gb
+    memswap_limit: 2gb
     mem_reservation: 512m
     cap_add:
       - NET_ADMIN
     devices:
-        - '/dev/net/tun:/dev/net/tun'
+      - /dev/net/tun:/dev/net/tun
     environment:
-      - LOGLEVEL=info             # default
-      - TUN=tun0                  # default
-      - ADDR=198.18.0.1/15        # default
-      - MTU=9000                  # default
+      - LOGLEVEL=info
+      - TUN=tun0
+      - ADDR=198.18.0.1/15
+      - MTU=9000
 
       # What we care about:
-      - PROXY=                    # *required
-      - TUN_INCLUDED_ROUTES=      # The routes you want to route through the socks
+      - PROXY=${PROXY_ADDRESS}
+      - TUN_INCLUDED_ROUTES=${TARGET_ROUTES}
 
-      # Other options avaliable with tun2socks
-      - STATS=:8080               # optional
-      - RESTAPI=                  # optional
-      - TCP_SNDBUF=.              # optional
-      - TCP_RCVBUF=.              # optional
-      - TCP_AUTO_TUNING=.         # optional
-      - UDP_TIMEOUT=              # optional
-      - EXTRA_COMMANDS=           # optional
+      # optional options avaliable with tun2socks
+      #- STATS=:8080
+      - RESTAPI=
+      - TCP_SNDBUF=
+      - TCP_RCVBUF=
+      - TCP_AUTO_TUNING=1
+      - UDP_TIMEOUT=
+      - EXTRA_COMMANDS=
     networks:
-      wiresocks
+      - wiresocks
     extra_hosts:
-    # So you can easily reference your host docker interface for the docker network
-      - "host.docker.internal:host-gateway" 
+      # So you can easily reference your host docker interface for the docker network
+      - host.docker.internal:host-gateway
     sysctls:
       - net.ipv4.ip_forward=1
       - net.ipv4.conf.all.src_valid_mark=1
-      # - net.ipv4.conf.all.rp_filter=0
     ports:
-    # Because we are going to use this containers network for wireguard we have to port forward here
-      - 51820:51820/udp
+      # Because we are going to use this containers network for wireguard we have to port forward here
+      - ${WG_UDP_PORT}:${WG_UDP_PORT}/udp
     restart: unless-stopped
 
   wireguard:
     image: lscr.io/linuxserver/wireguard
-    container_name: wiresocks-wg
+    container_name: wireguard
+    depends_on:
+      - wiresocks
     cap_add:
       - NET_ADMIN
       - SYS_MODULE
+    env_file:
+      - .env
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=Europe/London
-      - SERVERPORT=51820
+      - SERVERPORT=${WG_UDP_PORT}
       # These are just settings that get populated into the client configs, you can edit the config after creation
-      - SERVERURL=wireguard.domain.com #optional - your server address
-      - PEERS=1 #optional - Amount of client configs to generate
-      - INTERNAL_SUBNET=10.13.13.0 #optional - What IPs to use for wireguard VPN
-
-      # Will likely match with TUN_INCLUDED_ROUTES above
-      - ALLOWEDIPS=0.0.0.0/0 #optional - Set in clients to say what should be sent to wireguard
+      - SERVERURL=${WG_HOST}
+      - PEERS=${WG_PEERS}
+      - INTERNAL_SUBNET=10.13.13.0
+      - ALLOWEDIPS=10.13.13.0/24,${TARGET_ROUTES}
     volumes:
-      - /tmp/config:/config # Set where you want your configs written
+      # this is where the wireguard peer configs will live
+      - ./config:/config
       - /lib/modules:/lib/modules
-      - ./coredns:/config/coredns
+      #
+      - ./init.d:/custom-cont-init.d:ro
+      #- ./coredns:/config/coredns
     sysctls:
       - net.ipv4.conf.all.src_valid_mark=1
     network_mode: container:wiresocks
