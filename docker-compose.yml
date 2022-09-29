@@ -24,12 +24,12 @@ services:
 
       # optional options avaliable with tun2socks
       #- STATS=:8080
-      #- RESTAPI=
-      - TCP_SNDBUF=128k
-      - TCP_RCVBUF=128k
-      - TCP_AUTO_TUNING=true
-      #- UDP_TIMEOUT=
-      #- EXTRA_COMMANDS=
+      - RESTAPI=
+      - TCP_SNDBUF=
+      - TCP_RCVBUF=
+      - TCP_AUTO_TUNING=1
+      - UDP_TIMEOUT=
+      - EXTRA_COMMANDS=
     networks:
       - wiresocks
     extra_hosts:
