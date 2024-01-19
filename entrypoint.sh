@@ -6,6 +6,15 @@
 TUN="${TUN:-tun0}"
 ADDR="${ADDR:-198.18.0.1/15}"
 LOGLEVEL="${LOGLEVEL:-info}"
+PROXY_ADDRESS=${PROXY#*//}
+DEFAULT_ROUTE=$(ip route | grep default | head -1)
+
+config_proxy_route() {
+  echo 200 proxy >> /etc/iproute2/rt_tables
+  ip route add table proxy $DEFAULT_ROUTE
+  ip rule add fwmark 200 table 200
+  iptables -t mangle -A OUTPUT -p tcp -d ${PROXY_ADDRESS%:*} --dport ${PROXY_ADDRESS#*:} -j MARK --set-mark 200
+}
 
 create_tun() {
   ip tuntap add mode tun dev "$TUN"
@@ -22,6 +31,7 @@ config_route() {
 
 run() {
 
+  config_proxy_route
   create_tun
   config_route
 

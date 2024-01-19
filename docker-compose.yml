@@ -4,6 +4,8 @@ services:
 
   wiresocks:
     image: ghcr.io/sensepost/wiresocks:latest
+    build:
+      dockerfile: Dockerfile
     container_name: wiresocks
     mem_limit: 1gb
     memswap_limit: 2gb
@@ -13,7 +15,7 @@ services:
     devices:
       - /dev/net/tun:/dev/net/tun
     environment:
-      - LOGLEVEL=info
+      - LOGLEVEL=${LOGLEVEL:-info}
       - TUN=tun0
       - ADDR=198.18.0.1/15
       - MTU=9000
@@ -63,6 +65,7 @@ services:
       - PEERS=${WG_PEERS}
       - INTERNAL_SUBNET=10.13.13.0
       - ALLOWEDIPS=10.13.13.0/24,${TARGET_ROUTES}
+      - TARGET_ROOT_DOMAINS=${TARGET_ROOT_DOMAINS}
     volumes:
       # this is where the wireguard peer configs will live
       - ./config:/config
